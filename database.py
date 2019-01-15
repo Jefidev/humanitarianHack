@@ -1,5 +1,11 @@
 import json
 from pathlib import Path
+import base64
+import boto3
+
+
+
+
 
 
 class MongoDatabase(object):
@@ -7,6 +13,8 @@ class MongoDatabase(object):
     def __init__(self):
         self.users_data = {}
         self.uid = 0
+
+        self.client = boto3.client('rekognition', region_name='us-west-2',aws_access_key_id="",aws_secret_access_key="")
 
         # load data
         my_file = Path("data.json")
@@ -54,6 +62,10 @@ class MongoDatabase(object):
         for key in user_available_id:
             if key in id_data:
 
+                if key == "image":
+                    if(self.compare_face(user_available_id[key],id_data[key]) ):
+                        match += 1
+
                 if user_available_id[key] == id_data[key]:
                     match += 1
 
@@ -66,3 +78,9 @@ class MongoDatabase(object):
             return found[0], ids[0]
 
         raise ModuleNotFoundError
+
+    def compare_face(self,db_image,search_image):
+        response=self.client.compare_faces(SimilarityThreshold=70,
+                                      SourceImage={'Bytes': base64.b64decode(db_image)},
+                                      TargetImage={'Bytes': base64.b64decode(search_image)})
+        return len(response['FaceMatches']) > 0

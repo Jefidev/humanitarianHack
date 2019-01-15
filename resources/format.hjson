@@ -1,10 +1,9 @@
 {
-    "identification": [
-
-        {
-            "type": "fingerprint",
-            "value": "multipart thing"
-        },
+    "identification": {
+        "finger": "fhjdsgfhjgshfgsh"
+        "pwd": "pwd
+        "image": base64
+    }
         // ... Could have several at once
     ],
 
