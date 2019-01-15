@@ -102,7 +102,7 @@ def update_data():
 
     try:
         data = jwt.decode(update_info["jwt"], SECRET, algorithms=['HS256'])
-        db.upate_user_data(data["UID"], update_info["payload"])
+        db.update_user_data(data["UID"], update_info["payload"])
 
         return "success", 200
     except jwt.ExpiredSignatureError:
