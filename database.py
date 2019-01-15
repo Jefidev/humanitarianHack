@@ -79,8 +79,24 @@ class MongoDatabase(object):
 
         raise ModuleNotFoundError
 
+<<<<<<< HEAD
     def compare_face(self,db_image,search_image):
         response=self.client.compare_faces(SimilarityThreshold=70,
                                       SourceImage={'Bytes': base64.b64decode(db_image)},
                                       TargetImage={'Bytes': base64.b64decode(search_image)})
         return len(response['FaceMatches']) > 0
+=======
+    def delete_user_data(self, userid, category_names):
+        for cat in category_names:
+            self.users_data[userid]["parameters"].pop(cat, None)
+
+        with open('data.json', 'w') as outfile:
+            json.dump(self.users_data, outfile)
+
+    def update_user_data(self, userid, update_cat):
+        for cat in update_cat:
+            self.users_data[userid]["parameters"][cat] = update_cat[cat]
+
+        with open('data.json', 'w') as outfile:
+            json.dump(self.users_data, outfile)
+>>>>>>> b70a93c14a5614f5f99294ab1132c0f53ca2fb2a

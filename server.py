@@ -32,9 +32,10 @@ def add_user():
     if "identifications" not in user_info:
         return jsonify({"error": "The new user should have at least one identification method"}), 400
 
-    if len(user_info["identifications"]) == 0:
+    if len(user_info["identifications"]) < 3:
         return jsonify({"error": "The new user should have at least one identification method"}), 400
 
+    user_info["parameters"] = {}
     db.add_user(user_info)
     return "success", 200
 
@@ -62,7 +63,7 @@ def get_user():
         return jsonify({"error": "Missing identifications"}), 400
 
 
-@app.route('/user/authenticate', methods=["POST"])
+@app.route('/users/authenticate', methods=["POST"])
 def authenticate_user(self):
     user_id = request.get_json()
 
@@ -74,10 +75,40 @@ def authenticate_user(self):
              datetime.timedelta(minute=10)},
             SECRET, algorithm='HS256')
 
-        return jsonify({"jwt": encoded_jwt}), 200
+        return jsonify({"jwt": encoded_jwt, "user": u}), 200
 
     except ModuleNotFoundError:
         return jsonify({"error": "No matching in DB"}), 400
+
+
+@app.route('/users', methods=["DELETE"])
+def delete_data():
+    delete_info = request.get_json()
+
+    try:
+        data = jwt.decode(delete_info["jwt"], SECRET, algorithms=['HS256'])
+        db.delete_user_data(data["UID"], delete_info["delete_cat"])
+
+        return "success", 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token has expired"}), 400
+    except KeyError as e:
+        return jsonify({"error": "Missing key (expect jwt, category to delete"}), 400
+
+
+@app.route('/users', methods=["PUT"])
+def update_data():
+    update_info = request.get_json()
+
+    try:
+        data = jwt.decode(update_info["jwt"], SECRET, algorithms=['HS256'])
+        db.update_user_data(data["UID"], update_info["payload"])
+
+        return "success", 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token has expired"}), 400
+    except KeyError as e:
+        return jsonify({"error": "Missing key (expect jwt, payload"}), 400
 
 
 app.run()
