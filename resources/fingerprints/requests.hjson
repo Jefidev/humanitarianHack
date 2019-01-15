@@ -1,0 +1,25 @@
+{
+    "identifications": [
+
+        {
+            "type": "fingerprint",
+            "value": ""
+        },
+
+        {
+            "type": "fullname",
+            "value": "Usaim Murtadhy Issa"
+        }
+        // ... Could have several at once
+    ],
+
+    "parameters": [
+        
+        {
+            "id": "MSF",
+            "blood-pressure": 11
+        }
+
+    ]
+
+}

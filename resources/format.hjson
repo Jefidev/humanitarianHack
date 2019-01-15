@@ -1,5 +1,5 @@
 {
-    "identification": [
+    "identifications": [
 
         {
             "type": "fingerprint",
@@ -8,18 +8,14 @@
         // ... Could have several at once
     ],
 
-    "parameters": {
-        
-        "age": 34,
-        // ... any other informations
+    "parameters": [
 
-    },
+        {
+            "id": "MSF", 
+            "blood-pressure": 11
+        }
 
-    "context" : {
-
-        // YOLO
-
-    }
+    ],
 
 
 }
