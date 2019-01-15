@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask
+from flask import Flask, request
 from flask.json import jsonify
 
 app = Flask(__name__)
@@ -16,7 +16,10 @@ class MongoDatabase(object):
         self.uid += 1
         self.users_data[self.uid] = user_data
 
-    def search_user(self, parameters):
+    def get_all_db(self):
+        return self.users_data
+
+    def search_user(self, id_data):
         NotImplemented
 
 
@@ -31,9 +34,25 @@ def get_hello():
     return jsonify(test), 200
 
 
-@app.rout('/user', methods=['POST'])
-def add_user(self, data):
-    NotImplemented
+@app.route('/users', methods=['POST'])
+def add_user():
+    user_info = request.get_json()
+
+    db.add_user(user_info)
+
+    response = jsonify(db.get_all_db())
+
+    return response, 200
+
+
+@app.rout('/users', methods=['GET'])
+def get_user():
+    user_info = request.get_json()
+
+    try:
+        db.search_user(user_info["identifications"])
+    except KeyError as e:
+        return "Missing identifications", 400
 
 
 app.run()
