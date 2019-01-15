@@ -14,6 +14,8 @@ class MongoDatabase(object):
             with open('data.json', 'r') as f:
                 self.users_data = json.loads(f.read())
 
+            self.uid = max(self.users_data.keys())
+
     def add_user(self, user_data):
         self.uid += 1
         self.users_data[self.uid] = user_data
@@ -26,6 +28,7 @@ class MongoDatabase(object):
 
     def search_user(self, id_data):
         found = []
+        ids = []
 
         for uid in self.users_data:
             user = self.users_data[uid]
@@ -39,7 +42,9 @@ class MongoDatabase(object):
                     'percentage': percentage
                 })
 
-        return found
+                ids.append(uid)
+
+        return found, ids
 
     def _id_match(self, user, id_data):
 
@@ -53,3 +58,11 @@ class MongoDatabase(object):
                     match += 1
 
         return match
+
+    def get_unique_users(self, id_data):
+        found, ids = self.search_user(id_data)
+
+        if len(found) == 1:
+            return found[0], ids[0]
+
+        raise ModuleNotFoundError
