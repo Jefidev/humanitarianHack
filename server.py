@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask
+from flask import Flask, request
 from flask.json import jsonify
 
 app = Flask(__name__)
@@ -15,6 +15,9 @@ class MongoDatabase(object):
     def add_user(self, user_data):
         self.uid += 1
         self.users_data[self.uid] = user_data
+
+    def get_all_db(self):
+        return self.users_data
 
     def search_user(self, parameters):
         NotImplemented
@@ -31,9 +34,14 @@ def get_hello():
     return jsonify(test), 200
 
 
-@app.rout('/user', methods=['POST'])
-def add_user(self, data):
-    NotImplemented
+@app.route('/users', methods=['POST'])
+def add_user():
+    user_info = request.get_json()
+    db.add_user(user_info)
+
+    response = jsonify(db.get_all_db())
+
+    return response, 200
 
 
 app.run()
