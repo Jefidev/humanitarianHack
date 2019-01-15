@@ -66,3 +66,17 @@ class MongoDatabase(object):
             return found[0], ids[0]
 
         raise ModuleNotFoundError
+
+    def delete_user_data(self, userid, category_names):
+        for cat in category_names:
+            self.users_data[userid]["parameters"].pop(cat, None)
+
+        with open('data.json', 'w') as outfile:
+            json.dump(self.users_data, outfile)
+
+    def update_user_data(self, userid, update_cat):
+        for cat in update_cat:
+            self.users_data[userid]["parameters"][cat] = update_cat[cat]
+
+        with open('data.json', 'w') as outfile:
+            json.dump(self.users_data, outfile)
