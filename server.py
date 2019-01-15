@@ -1,27 +1,8 @@
-import json
-
+from database import MongoDatabase
 from flask import Flask, request
 from flask.json import jsonify
 
 app = Flask(__name__)
-
-
-class MongoDatabase(object):
-
-    def __init__(self):
-        self.users_data = {}
-        self.uid = 0
-
-    def add_user(self, user_data):
-        self.uid += 1
-        self.users_data[self.uid] = user_data
-
-    def get_all_db(self):
-        return self.users_data
-
-    def search_user(self, id_data):
-        NotImplemented
-
 
 db = MongoDatabase()
 
@@ -38,21 +19,36 @@ def get_hello():
 def add_user():
     user_info = request.get_json()
 
+    # Did the user have at least one authentication methods
+    if "identifications" not in user_info:
+        return jsonify({"error": "The new user should have at least one identification method"}), 400
+
+    if len(user_info["identifications"]) == 0:
+        return jsonify({"error": "The new user should have at least one identification method"}), 400
+
     db.add_user(user_info)
-
-    response = jsonify(db.get_all_db())
-
-    return response, 200
+    return "success", 200
 
 
-@app.rout('/users', methods=['GET'])
+@app.route('/users/search', methods=['POST'])
 def get_user():
     user_info = request.get_json()
 
     try:
-        db.search_user(user_info["identifications"])
+        res = db.search_user(user_info["identifications"])
+
+        print(res)
+
+        if len(res) == 0:
+            return jsonify({"error": "No user found"}), 400
+
+        res.sort(key=lambda x: x["percentage"])
+        found = res[0]
+        print(found)
+        return jsonify(found), 200
+
     except KeyError as e:
-        return "Missing identifications", 400
+        return jsonify({"error": "Missing identifications"}), 400
 
 
 app.run()
