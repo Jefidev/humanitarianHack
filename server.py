@@ -19,7 +19,7 @@ class MongoDatabase(object):
     def get_all_db(self):
         return self.users_data
 
-    def search_user(self, parameters):
+    def search_user(self, id_data):
         NotImplemented
 
 
@@ -37,11 +37,22 @@ def get_hello():
 @app.route('/users', methods=['POST'])
 def add_user():
     user_info = request.get_json()
+
     db.add_user(user_info)
 
     response = jsonify(db.get_all_db())
 
     return response, 200
+
+
+@app.rout('/users', methods=['GET'])
+def get_user():
+    user_info = request.get_json()
+
+    try:
+        db.search_user(user_info["identifications"])
+    except KeyError as e:
+        return "Missing identifications", 400
 
 
 app.run()
