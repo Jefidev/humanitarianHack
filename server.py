@@ -1,17 +1,25 @@
 import datetime
+import os
 
 import jwt
 from database import MongoDatabase
 from flask import Flask, request
 from flask.json import jsonify
+from flask_cors import CORS, cross_origin
 
-app = Flask(__name__)
+idam = os.environ.get('ID_AMAZON', None)
+keyam = os.environ.get('KEY_AMAZON', None)
 
-db = MongoDatabase()
+
+application = Flask(__name__)
+CORS(application, support_credentials=True)
+
+db = MongoDatabase(idam, keyam)
 SECRET = "chjxwk<lmksfhjsckdlxsckdlhjkscdlcjvvblcdsfjbgkd,slq"
 
 
-@app.route('/ping', methods=['GET'])
+@application.route('/ping', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def get_hello():
     test = {}
     test["ping"] = "pong"
@@ -24,7 +32,8 @@ Add a user to the database with, at least, 1 identification methods
 '''
 
 
-@app.route('/users', methods=['POST'])
+@application.route('/users', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def add_user():
     user_info = request.get_json()
 
@@ -45,7 +54,8 @@ Search the most probable user based on the identification methodes provided.
 '''
 
 
-@app.route('/users/search', methods=['POST'])
+@application.route('/users/search', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def get_user():
     user_info = request.get_json()
 
@@ -63,8 +73,9 @@ def get_user():
         return jsonify({"error": "Missing identifications"}), 400
 
 
-@app.route('/users/authenticate', methods=["POST"])
-def authenticate_user(self):
+@application.route('/users/authenticate', methods=["POST"])
+@cross_origin(supports_credentials=True)
+def authenticate_user():
     user_id = request.get_json()
 
     try:
@@ -81,7 +92,8 @@ def authenticate_user(self):
         return jsonify({"error": "No matching in DB"}), 400
 
 
-@app.route('/users', methods=["DELETE"])
+@application.route('/users', methods=["DELETE"])
+@cross_origin(supports_credentials=True)
 def delete_data():
     delete_info = request.get_json()
 
@@ -96,7 +108,8 @@ def delete_data():
         return jsonify({"error": "Missing key (expect jwt, category to delete"}), 400
 
 
-@app.route('/users', methods=["PUT"])
+@application.route('/users', methods=["PUT"])
+@cross_origin(supports_credentials=True)
 def update_data():
     update_info = request.get_json()
 
@@ -111,4 +124,5 @@ def update_data():
         return jsonify({"error": "Missing key (expect jwt, payload"}), 400
 
 
-app.run()
+if __name__ == "__main__":
+    application.run(host='0.0.0.0', port=80, debug=True)

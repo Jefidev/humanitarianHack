@@ -7,12 +7,12 @@ import boto3
 
 class MongoDatabase(object):
 
-    def __init__(self):
+    def __init__(self, access_id, acess_key):
         self.users_data = {}
         self.uid = 0
 
         self.client = boto3.client(
-            'rekognition', region_name='us-west-2', aws_access_key_id="", aws_secret_access_key="")
+            'rekognition', region_name='us-west-2', aws_access_key_id=access_id, aws_secret_access_key=acess_key)
 
         # load data
         my_file = Path("data.json")
@@ -44,7 +44,7 @@ class MongoDatabase(object):
 
             if percentage > 0:
                 found.append({
-                    'user': user["parameters"],
+                    'user': user["identifications"]["images"],
                     'percentage': percentage
                 })
 
