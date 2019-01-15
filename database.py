@@ -1,11 +1,8 @@
+import base64
 import json
 from pathlib import Path
-import base64
+
 import boto3
-
-
-
-
 
 
 class MongoDatabase(object):
@@ -14,7 +11,8 @@ class MongoDatabase(object):
         self.users_data = {}
         self.uid = 0
 
-        self.client = boto3.client('rekognition', region_name='us-west-2',aws_access_key_id="",aws_secret_access_key="")
+        self.client = boto3.client(
+            'rekognition', region_name='us-west-2', aws_access_key_id="", aws_secret_access_key="")
 
         # load data
         my_file = Path("data.json")
@@ -46,7 +44,7 @@ class MongoDatabase(object):
 
             if percentage > 0:
                 found.append({
-                    'user': user,
+                    'user': user["parameters"],
                     'percentage': percentage
                 })
 
@@ -63,10 +61,10 @@ class MongoDatabase(object):
             if key in id_data:
 
                 if key == "image":
-                    if(self.compare_face(user_available_id[key],id_data[key]) ):
+                    if(self.compare_face(user_available_id[key], id_data[key])):
                         match += 1
 
-                if user_available_id[key] == id_data[key]:
+                elif user_available_id[key] == id_data[key]:
                     match += 1
 
         return match
@@ -79,8 +77,23 @@ class MongoDatabase(object):
 
         raise ModuleNotFoundError
 
-    def compare_face(self,db_image,search_image):
-        response=self.client.compare_faces(SimilarityThreshold=70,
-                                      SourceImage={'Bytes': base64.b64decode(db_image)},
-                                      TargetImage={'Bytes': base64.b64decode(search_image)})
+    def compare_face(self, db_image, search_image):
+        response = self.client.compare_faces(SimilarityThreshold=70,
+                                             SourceImage={
+                                                 'Bytes': base64.b64decode(db_image)},
+                                             TargetImage={'Bytes': base64.b64decode(search_image)})
         return len(response['FaceMatches']) > 0
+
+    def delete_user_data(self, userid, category_names):
+        for cat in category_names:
+            self.users_data[userid]["parameters"].pop(cat, None)
+
+        with open('data.json', 'w') as outfile:
+            json.dump(self.users_data, outfile)
+
+    def update_user_data(self, userid, update_cat):
+        for cat in update_cat:
+            self.users_data[userid]["parameters"][cat] = update_cat[cat]
+
+        with open('data.json', 'w') as outfile:
+            json.dump(self.users_data, outfile)
