@@ -1,0 +1,46 @@
+{
+    "identification": [
+
+        {
+            "type": "fingerprint",
+            "value": "multipart thing"
+        },
+        // ... Could have several at once
+    ],
+
+    "parameters": {
+        
+        "age": 34,
+        // ... any other informations
+
+    },
+
+    "context" : {
+
+        // YOLO
+
+    }
+
+
+}
+
+// Different identifications
+{
+    "type": "fingerprint",
+    "value": "multipart thing"
+}
+
+{
+    "type": "visual-recognition",
+    "value": "multipart thing"
+}
+
+{
+    "type": "password",
+    "value": "coucoux32"
+}
+
+{
+    "type": "fullname",
+    "value": "Simon Pascal Thomas Genin"
+}
