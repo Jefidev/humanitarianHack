@@ -90,7 +90,7 @@ def authenticate_user():
              datetime.timedelta(minute=10)},
             SECRET, algorithm='HS256')
 
-        return jsonify({"jwt": encoded_jwt, "user": u}), 200
+        return jsonify({"jwt": encoded_jwt, "user": u["parameters", "image": u["identifications"]["image"]]}), 200
 
     except ModuleNotFoundError:
         print("AUTHEN---- MODULEERROR")
