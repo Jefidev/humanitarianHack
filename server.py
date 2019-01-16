@@ -10,7 +10,6 @@ from flask_cors import CORS, cross_origin
 idam = os.environ.get('ID_AMAZON', None)
 keyam = os.environ.get('KEY_AMAZON', None)
 
-
 application = Flask(__name__)
 CORS(application, support_credentials=True)
 
@@ -44,8 +43,11 @@ def add_user():
     if len(user_info["identifications"]) < 3:
         return jsonify({"error": "The new user should have at least one identification method"}), 400
 
-    user_info["parameters"] = {}
+    if "parameters" not in user_info:
+        user_info["parameters"] = {}
+
     db.add_user(user_info)
+
     return "success", 200
 
 
@@ -78,8 +80,10 @@ def get_user():
 def authenticate_user():
     user_id = request.get_json()
 
+    print("AUTHEN---- " + str(user_id))
+
     try:
-        u, uid = db.get_unique_users(user_id)
+        u, uid = db.get_unique_users(user_id["identifications"])
 
         encoded_jwt = jwt.encode(
             {'UID': uid, 'exp': datetime.datetime.utcnow() +
@@ -89,7 +93,11 @@ def authenticate_user():
         return jsonify({"jwt": encoded_jwt, "user": u}), 200
 
     except ModuleNotFoundError:
+        print("AUTHEN---- MODULEERROR")
         return jsonify({"error": "No matching in DB"}), 400
+    except KeyError as e:
+        print("AUTHEN---- error key")
+        return jsonify({"error": "Missing identifications"}), 400
 
 
 @application.route('/users', methods=["DELETE"])

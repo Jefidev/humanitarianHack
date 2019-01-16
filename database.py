@@ -29,6 +29,8 @@ class MongoDatabase(object):
         with open('data.json', 'w') as outfile:
             json.dump(self.users_data, outfile)
 
+        print("Add in {}".format(self.uid))
+
     def get_all_db(self):
         return self.users_data
 
@@ -40,7 +42,10 @@ class MongoDatabase(object):
             user = self.users_data[uid]
 
             score = self._id_match(user, id_data)
-            percentage = score / len(id_data)
+            percentage = 0
+
+            if len(id_data) > 0:
+                percentage = score / len(id_data)
 
             if percentage > 0:
                 found.append({
