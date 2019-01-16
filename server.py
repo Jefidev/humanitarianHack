@@ -89,7 +89,7 @@ def authenticate_user():
         encoded_jwt = jwt.encode(
             {'UID': uid, 'exp': datetime.datetime.utcnow() +
              datetime.timedelta(minutes=10)},
-            SECRET, algorithm='HS256')
+            SECRET, algorithm='HS256').decode("utf-8")
 
         return jsonify({"jwt": encoded_jwt, "user": u["parameters"], "image": u["identifications"]["image"]}), 200
 
