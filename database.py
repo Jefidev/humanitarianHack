@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 
 import boto3
+import populate
+from populate import random_list_user
 
 
 class MongoDatabase(object):
@@ -14,20 +16,14 @@ class MongoDatabase(object):
         self.client = boto3.client(
             'rekognition', region_name='us-west-2', aws_access_key_id=access_id, aws_secret_access_key=acess_key)
 
-        # load data
-        my_file = Path("data.json")
-        if my_file.is_file():
-            with open('data.json', 'r') as f:
-                self.users_data = json.loads(f.read())
+        users = random_list_user()
 
-            self.uid = max(self.users_data.keys())
+        for u in users:
+            self.add_user(u)
 
     def add_user(self, user_data):
         self.uid += 1
         self.users_data[self.uid] = user_data
-
-        with open('data.json', 'w') as outfile:
-            json.dump(self.users_data, outfile)
 
         print("Add in {}".format(self.uid))
 
@@ -106,12 +102,6 @@ class MongoDatabase(object):
         for cat in category_names:
             self.users_data[userid]["parameters"].pop(cat, None)
 
-        with open('data.json', 'w') as outfile:
-            json.dump(self.users_data, outfile)
-
     def update_user_data(self, userid, update_cat):
         for cat in update_cat:
             self.users_data[userid]["parameters"][cat] = update_cat[cat]
-
-        with open('data.json', 'w') as outfile:
-            json.dump(self.users_data, outfile)
