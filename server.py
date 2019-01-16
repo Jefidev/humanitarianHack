@@ -100,6 +100,33 @@ def authenticate_user():
         return jsonify({"error": "Missing identifications"}), 400
 
 
+@application.route('/users/authenticate/strict', methods=["POST"])
+@cross_origin(supports_credentials=True)
+def authenticate_user_strict():
+    user_id = request.get_json()
+
+    print("AUTHEN---- " + str(user_id))
+
+    try:
+        u, uid = db.get_unique_strict(user_id["identifications"])
+
+        encoded_jwt = jwt.encode(
+            {'UID': uid, 'exp': datetime.datetime.utcnow() +
+             datetime.timedelta(minute=10)},
+            SECRET, algorithm='HS256')
+
+        return jsonify({"jwt": encoded_jwt, "user": u["parameters", "image": u["identifications"]["image"]]}), 200
+
+    except ModuleNotFoundError:
+        print("AUTHEN---- MODULEERROR")
+        return jsonify({"error": "No matching in DB"}), 400
+    except KeyError as e:
+        print("AUTHEN---- error key")
+        return jsonify({"error": "Missing identifications"}), 400
+    except ValueError as e:
+        return jsonify({"error": "Credentials error"}), 400
+
+
 @application.route('/users', methods=["DELETE"])
 @cross_origin(supports_credentials=True)
 def delete_data():
@@ -130,6 +157,12 @@ def update_data():
         return jsonify({"error": "Token has expired"}), 400
     except KeyError as e:
         return jsonify({"error": "Missing key (expect jwt, payload"}), 400
+
+
+@application.route('/test', methods=["GET"])
+@cross_origin(supports_credentials=True)
+def fetch_all():
+    return jsonify({"response": list(db.get_all_db().keys())}), 200
 
 
 if __name__ == "__main__":

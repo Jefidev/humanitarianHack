@@ -78,6 +78,19 @@ class MongoDatabase(object):
         found, ids = self.search_user(id_data)
 
         if len(found) == 1:
+            profile = found[0]
+
+            if profile["percentage"] < 1:
+                raise ValueError
+
+            return profile, ids[0]
+
+        raise ModuleNotFoundError
+
+    def get_unique_strict(self, id_data):
+        found, ids = self.search_user(id_data)
+
+        if len(found) == 1:
             return found[0], ids[0]
 
         raise ModuleNotFoundError
