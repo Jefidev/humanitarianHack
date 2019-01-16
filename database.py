@@ -40,12 +40,14 @@ class MongoDatabase(object):
             score = self._id_match(user, id_data)
             percentage = 0
 
+            print(score)
+
             if len(id_data) > 0:
                 percentage = score / len(id_data)
 
             if percentage > 0:
                 found.append({
-                    'user': user["identifications"]["images"],
+                    'user': user,
                     'percentage': percentage
                 })
 

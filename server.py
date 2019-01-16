@@ -84,13 +84,14 @@ def authenticate_user():
 
     try:
         u, uid = db.get_unique_users(user_id["identifications"])
+        u = u["user"]
 
         encoded_jwt = jwt.encode(
             {'UID': uid, 'exp': datetime.datetime.utcnow() +
-             datetime.timedelta(minute=10)},
+             datetime.timedelta(minutes=10)},
             SECRET, algorithm='HS256')
 
-        return jsonify({"jwt": encoded_jwt, "user": u["parameters", "image": u["identifications"]["image"]]}), 200
+        return jsonify({"jwt": encoded_jwt, "user": u["parameters"], "image": u["identifications"]["image"]}), 200
 
     except ModuleNotFoundError:
         print("AUTHEN---- MODULEERROR")
@@ -109,13 +110,14 @@ def authenticate_user_strict():
 
     try:
         u, uid = db.get_unique_strict(user_id["identifications"])
+        u = u["user"]
 
         encoded_jwt = jwt.encode(
             {'UID': uid, 'exp': datetime.datetime.utcnow() +
-             datetime.timedelta(minute=10)},
+             datetime.timedelta(minutes=10)},
             SECRET, algorithm='HS256')
 
-        return jsonify({"jwt": encoded_jwt, "user": u["parameters", "image": u["identifications"]["image"]]}), 200
+        return jsonify({"jwt": encoded_jwt, "user": u["parameters"], "image": u["identifications"]["image"]}), 200
 
     except ModuleNotFoundError:
         print("AUTHEN---- MODULEERROR")
